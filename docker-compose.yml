@@ -1,0 +1,41 @@
+services:
+  gateway:
+    build: ./gateway
+    ports:
+      - "9999:80"
+    depends_on:
+      - reflector-agent
+      - strategist-agent
+      - music-agent
+      - challenger-agent
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - gateway
+
+  reflector-agent:
+    build:
+      context: ./backend/agents/reflector-agent
+    env_file:
+      - .env
+
+  strategist-agent:
+    build:
+      context: ./backend/agents/strategist-agent
+    env_file:
+      - .env
+
+  music-agent:
+    build:
+      context: ./backend/agents/music-agent
+    env_file:
+      - .env
+
+  challenger-agent:
+    build:
+      context: ./backend/agents/challenger-agent
+    env_file:
+      - .env
