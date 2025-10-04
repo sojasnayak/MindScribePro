@@ -1,4 +1,4 @@
-# Save this file in: backend/agents/strategist-agent/main.py
+# Save this in: backend/agents/strategist-agent/main.py
 
 import os, json
 from fastapi import FastAPI, HTTPException
@@ -20,9 +20,15 @@ SYSTEM_PROMPT = """You are 'The Strategist,' a psychological analyst AI. You wil
 async def analyze_entry(req: AnalysisRequest):
     prompt = f"Pattern: {req.pattern_found}\nText: {req.original_text}"
     try:
-        completion = client.chat.completions.create(model="google/gemini-flash-1.5", messages=[{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": prompt}])
+        completion = client.chat.completions.create(model="mistralai/mistral-7b-instruct", messages=[{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": prompt}])
         response_text = completion.choices[0].message.content
-        return json.loads(response_text)
+        
+        # --- BULLETPROOF JSON PARSING ---
+        json_start = response_text.find('{')
+        json_end = response_text.rfind('}') + 1
+        json_string = response_text[json_start:json_end]
+
+        return json.loads(json_string)
+        
     except Exception as e:
-        print(f"Error in strategist-agent: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Error in strategist-agent: {e}")
