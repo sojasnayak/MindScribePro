@@ -1,0 +1,6 @@
+# This file goes inside each of the 4 agent folders
+
+fastapi
+uvicorn
+python-dotenv
+openai
